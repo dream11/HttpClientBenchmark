@@ -39,8 +39,8 @@ services:
     #build: .
 
     environment:
-      # - "CLIENT_TYPE=STTP"
-      - "CLIENT_TYPE=ZHTTP"
+      - "CLIENT_TYPE=STTP"
+      # - "CLIENT_TYPE=ZHTTP"
       - "ROOT_CONTEXT=zhttp-server:7777"
 
     depends_on:

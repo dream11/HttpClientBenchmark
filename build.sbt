@@ -31,8 +31,6 @@ libraryDependencies ++= Seq(
   "io.d11"                %% "zhttp"                          % zhttpVersion,
 
   // sttp
-  "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server" % "1.0.0-M1",
-  //"com.softwaremill.sttp.tapir" %% "tapir-zio-http" % "1.0.0-M1",
   "com.softwaremill.sttp.client3" %% "core" % "3.5.1",
   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio1" % "3.5.1" // for ZIO 1.x,
 )

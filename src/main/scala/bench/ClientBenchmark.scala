@@ -23,7 +23,7 @@ case object SttpBenchmark extends BaseBenchmark {
   val backend                       = AsyncHttpClientZioBackend.usingConfig(config)
 
   def run(n: Int) = for {
-    _ <- ZIO(println(s"Warming up the server with 2000 requests $grequest"))
+    _ <- ZIO(println(s"STTP CLIENT: Warming up the server with 2000 requests $grequest"))
     _ <- backend.flatMap(backend => grequest.send(backend).map(_.statusText).repeatN(2000))
 
     _         <- ZIO(println("\nStarting the benchmarking for GET requests with sttp client!\n"))
@@ -31,14 +31,14 @@ case object SttpBenchmark extends BaseBenchmark {
     startTime <- ZIO(System.nanoTime())
     _         <- backend.flatMap(backend => grequest.send(backend).map(_.statusText).repeatN(n))
     duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-    _        = println(s"\n GET requests/sec for sttp client: ${(n * 1000 / duration)}\n")
+    _        = println(s"\n STTP CLIENT: GET requests/sec: ${(n * 1000 / duration)}\n")
 
-    _         <- ZIO(println("\nStarting the benchmarking for POST requests for sttp client!\n"))
-    _         <- ZIO(println(s"\nNumber of POST requests: ${n}\n"))
+    _         <- ZIO(println("\nSTTP CLIENT: Starting the benchmarking for POST requests!\n"))
+    _         <- ZIO(println(s"\nSTTP CLIENT: Number of POST requests: ${n}\n"))
     startTime <- ZIO(System.nanoTime())
     _         <- backend.flatMap(backend => prequest.send(backend).map(_.statusText).repeatN(n))
     duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-    _        = println(s"\nPOST requests/sec for sttp client: ${(n * 1000 / duration)}\n")
+    _        = println(s"\nSTTP CLIENT: POST requests/sec: ${(n * 1000 / duration)}\n")
 
   } yield ()
 
@@ -90,28 +90,27 @@ case object ZHttpBenchmarkOld extends BaseBenchmark {
   val purl = s"http://$rootContext/post"
 
   def run(n: Int) = (for {
-    _ <- ZIO(println(s"Warming up the server with 2000 requests $gurl"))
+    _ <- ZIO(println(s"ZIO-HTTP CLIENT: Warming up the server with 2000 requests $gurl"))
 
         _ <- Client.request(gurl).map(_.status).repeatN(2000)
 
-    _         <- ZIO(println("\nStarting the benchmarking for GET requests with zio-http OLD client!\n"))
-    _         <- ZIO(println(s"Number of GET requests: ${n}"))
+    _         <- ZIO(println("\nZIO-HTTP CLIENTStarting the benchmarking for GET requests!\n"))
+    _         <- ZIO(println(s"ZIO-HTTP CLIENT Number of GET requests: ${n}"))
     startTime <- ZIO(System.nanoTime())
 
         _ <- Client.request(gurl).map(_.status).repeatN(n)
 
     duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-    _        = println(s"\n GET requests/sec for zio-http client: ${(n * 1000 / duration)}\n")
+    _        = println(s"\nZIO-HTTP CLIENT GET requests/sec: ${(n * 1000 / duration)}\n")
 
-    _         <- ZIO(println("\nStarting the benchmarking for POST requests for zio-http OLD client!\n"))
-    _         <- ZIO(println(s"\nNumber of POST requests: ${n}\n"))
+    _         <- ZIO(println("\nZIO-HTTP CLIENTStarting the benchmarking for POST requests!\n"))
+    _         <- ZIO(println(s"\nZIO-HTTP CLIENTNumber of POST requests: ${n}\n"))
     startTime <- ZIO(System.nanoTime())
 
      _ <- Client.request(purl, Method.POST, Headers.empty, HttpData.fromString("Sample content")).map(_.status).repeatN(n)
-//    _ <- client.run(purl, Method.POST, Headers.empty, HttpData.fromString("Sample content")).map(_.status).repeatN(n)
 
     duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-    _        = println(s"\n POST requests/sec for zio-http client: ${(n * 1000 / duration)}\n")
+    _        = println(s"\nZIO-HTTP CLIENT POST requests/sec: ${(n * 1000 / duration)}\n")
 
   } yield ()).provideCustomLayer(env)
 }
