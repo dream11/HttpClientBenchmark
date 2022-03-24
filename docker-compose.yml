@@ -13,7 +13,7 @@ services:
     ports:
       - "7777:7777"
 
-    container_name: zhttp_server
+    container_name: zhttp-server
 
     # environment:
     #   - "CLIENT_TYPE=ZHTTP"
@@ -46,7 +46,7 @@ services:
     depends_on:
       - "zhttp-server"
 
-    container_name: zhttp_client
+    container_name: zhttp-client
 
     # Mount volume 
     volumes:
