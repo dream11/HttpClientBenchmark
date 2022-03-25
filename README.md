@@ -47,22 +47,12 @@
 </details>
 
 ### Artefacts:
-- ClientBenchmark.scala: 
-    - 
-    - 
-    - 
-    - 
-    
-- SimpleServer: 
-
-- client / server orchestration scripts
+* ClientBenchmark.scala: 
+* SimpleServer: 
+* client / server orchestration scripts
     - extra/run_client.sh
     - extra/run_server.sh
 
-- docker-compose.yml: 
-    - 
-    - 
+* docker-compose.yml: 
 
-- temp directories 
-    - 
-    - 
+* temp directories 
