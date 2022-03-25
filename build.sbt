@@ -5,7 +5,8 @@ val ZIOVersion = "1.0.13"
 val zhttpVersion     = "1.0.0.0-RC25"
 //val zhttpVersion = "2.0.0-RC4"
 
-val http4sVersion = "0.20.22"
+//val http4sVersion = "0.20.22"
+val http4sVersion = "0.23.11"
 
 lazy val root = project
   .in(file("."))

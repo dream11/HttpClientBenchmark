@@ -1,40 +1,40 @@
 package bench
 
-import java.util.concurrent.{Executors, TimeUnit}
-import cats.implicits._
+import java.util.concurrent.{TimeUnit}
 import org.http4s.{Method, Uri}
+import cats.effect._
+import org.http4s.Request
+import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.client.Client
 
-case object Http4sBenchmark extends BaseBenchmark {
+object Http4sBenchmark extends cats.effect.IOApp {
 
-  import cats.effect._
-  import org.http4s.client._
-  import org.http4s.Request
+  val rootContext = scala.util.Properties.envOrElse("ROOT_CONTEXT", "localhost:7777")
 
-  def run[F[_]: cats.effect.Async: ContextShift](n: Int): F[Unit] = {
-    import scala.concurrent.ExecutionContext
+  val gurl = s"http://$rootContext/get"
+  val getRequest = Request[IO](Method.GET,Uri.unsafeFromString(gurl))
+  val purl = s"http://$rootContext/post"
+  val postRequest = Request[IO](Method.POST,Uri.unsafeFromString(purl))
 
-    val gurl = s"http://$rootContext/get"
-    val getRequest = Request[F](Method.GET,Uri.unsafeFromString(gurl))
-    val purl = s"http://$rootContext/post"
-    val postRequest = Request[F](Method.POST,Uri.unsafeFromString(purl))
+  def run(client: Client[IO], n: Int) =     for {
+    //    _ <- ZIO(println(s"STTP CLIENT: Warming up the server with 2000 requests $grequest"))
+    _  <- client.status(getRequest).replicateA(2000)
 
-    val blockingEC = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(5))
-    val httpClient: Client[F] = JavaNetClientBuilder[F](blockingEC).create
+    startTime <- IO.delay(System.nanoTime())
+    _  <- client.status(getRequest).replicateA(n)
+    duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
+    _        <- IO.delay( println(s"\nHttp4s : GET $n requests --- ${(n * 1000 / duration)} requests/sec "))
 
-    for {
-      //    _ <- ZIO(println(s"STTP CLIENT: Warming up the server with 2000 requests $grequest"))
-      _  <- httpClient.status(getRequest).replicateA(2000)
+    startTime <- IO.delay(System.nanoTime())
+    _  <- client.status(postRequest).replicateA(n)
+    duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
+    _        <- IO.delay( println(s"Http4s : POST $n requests --- ${(n * 1000 / duration)} requests/sec "))
 
-      startTime <- Async[F].delay(System.nanoTime())
-      _  <- httpClient.status(getRequest).replicateA(n)
-      duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-      _        <- Async[F].delay( println(s"\nHttp4s : GET $n requests --- ${(n * 1000 / duration)} requests/sec "))
+  } yield ()
 
-      startTime <- Async[F].delay(System.nanoTime())
-      _  <- httpClient.status(postRequest).replicateA(n)
-      duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
-      _        <- Async[F].delay( println(s"Http4s : POST $n requests --- ${(n * 1000 / duration)} requests/sec "))
+  override def run(args: List[String]): IO[ExitCode] =
+    BlazeClientBuilder[IO].resource
+      .use(run(_, 3000))
+      .as(ExitCode.Success)
 
-    } yield ()
-  }
 }

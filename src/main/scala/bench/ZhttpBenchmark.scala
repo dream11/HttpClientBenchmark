@@ -2,11 +2,13 @@ package bench
 
 import zhttp.http.{Headers, HttpData, Method}
 import zhttp.service.{ChannelFactory, Client, EventLoopGroup}
-import zio.ZIO
+import zio.{ExitCode, URIO, ZIO}
 
 import java.util.concurrent.TimeUnit
 
-case object ZHttpBenchmarkOld extends BaseBenchmark {
+object ZhttpBenchmark extends zio.App {
+  val rootContext = scala.util.Properties.envOrElse("ROOT_CONTEXT", "localhost:7777")
+
   val env  = ChannelFactory.auto ++ EventLoopGroup.auto()
   val gurl = s"http://$rootContext/get"
   val purl = s"http://$rootContext/post"
@@ -26,4 +28,6 @@ case object ZHttpBenchmarkOld extends BaseBenchmark {
     _        = println(s"ZIO-HTTP : POST $n requests --- ${(n * 1000 / duration)} requests/sec \n")
 
   } yield ()).provideCustomLayer(env)
+
+  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = run(3000).exitCode
 }
