@@ -5,6 +5,8 @@ val ZIOVersion = "1.0.13"
 val zhttpVersion     = "1.0.0.0-RC25"
 //val zhttpVersion = "2.0.0-RC4"
 
+val http4sVersion = "0.20.22"
+
 lazy val root = project
   .in(file("."))
   .settings(
@@ -32,7 +34,15 @@ libraryDependencies ++= Seq(
 
   // sttp
   "com.softwaremill.sttp.client3" %% "core" % "3.5.1",
-  "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio1" % "3.5.1" // for ZIO 1.x,
+  "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio1" % "3.5.1", // for ZIO 1.x,
+
+  // http4s
+  "org.http4s" %% "http4s-dsl" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-server" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
+
+  // cats interop
+  "dev.zio" %% "zio-interop-cats" % "2.5.1.0",
 )
 
 testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))

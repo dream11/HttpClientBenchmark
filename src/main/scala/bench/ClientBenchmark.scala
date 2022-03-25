@@ -5,6 +5,7 @@ trait BaseBenchmark {
 
   val rootContext = scala.util.Properties.envOrElse("ROOT_CONTEXT", "localhost:7777")
 }
+import zio.interop.catz._
 
 object ClientBenchmark extends App {
 
@@ -14,6 +15,7 @@ object ClientBenchmark extends App {
 //    case "ZHTTP" => ZHttpBenchmark.run(n)
     case "ZHTTP_OLD" => ZHttpBenchmarkOld.run(n)
     case "STTP"  => SttpBenchmark.run(n)
+    case "HTTP4S" => Http4sBenchmark.run[zio.Task](n)
     case _       => ZHttpBenchmarkOld.run(n)
   }
 
