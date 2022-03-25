@@ -3,7 +3,6 @@ services:
 
   zhttp-server:
     #build: .
-
     image: hseeberger/scala-sbt:11.0.12_1.5.5_2.13.6
 
     mem_limit: 4G
@@ -17,6 +16,13 @@ services:
 
     # environment:
     #   - "CLIENT_TYPE=ZHTTP"
+
+    healthcheck:
+      test:
+        [
+            "CMD",
+            "curl", "-i", "http://localhost:7777/get"
+        ]
 
     # Mount volume 
     volumes:
@@ -35,7 +41,6 @@ services:
   zhttp-client:
 
     image: hseeberger/scala-sbt:11.0.12_1.5.5_2.13.6
-
     #build: .
 
     environment:
@@ -44,7 +49,9 @@ services:
       - "ROOT_CONTEXT=zhttp-server:7777"
 
     depends_on:
-      - "zhttp-server"
+      zhttp-server:
+        condition: service_healthy
+#      - "zhttp-server"
 
     container_name: zhttp-client
 
