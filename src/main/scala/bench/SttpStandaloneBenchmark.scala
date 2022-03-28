@@ -8,7 +8,7 @@ object SttpStandaloneBenchmark extends scala.App {
   val rootContext = scala.util.Properties.envOrElse("ROOT_CONTEXT", "localhost:7777")
   val N = scala.util.Properties.envOrElse("NUM_REQUESTS", "3000").toInt
 
-//  val config: AsyncHttpClientConfig = new DefaultAsyncHttpClientConfig.Builder().build()
+//  val config: org.asynchttpclient.AsyncHttpClientConfig = new org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder().build()
   val grequest                      = basicRequest.get(uri"http://$rootContext/get")
   val prequest                      = basicRequest.get(uri"http://$rootContext/post").body("Sample content")
 
@@ -28,6 +28,6 @@ object SttpStandaloneBenchmark extends scala.App {
   1 to N foreach { _ => prequest.send(backend).statusText }
   val durationPost = System.currentTimeMillis() - startTimeGet
 
-  println(s"\nSTTP : POST $N requests --- ${(N * 1000 / durationPost)} requests/sec ")
+  println(s"STTP : POST $N requests --- ${(N * 1000 / durationPost)} requests/sec ")
 
 }
